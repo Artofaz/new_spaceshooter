@@ -1,1 +1,2 @@
 g++ ./*.cpp ./definitions/*.cpp -o main -lSDL2main -lSDL2 -lSDL2_image -Iheaders -Iclasses
+>g++ ./*.cpp ./definitions/*.cpp -o main -lSDL2main -lSDL2 -lSDL2_image -Iinclude -Iheaders -Iclasses -Llib
