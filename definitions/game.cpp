@@ -15,7 +15,10 @@ Game::Game(SDL_Renderer *renderer, SDL_Window *window){
 
 Game::~Game(){};
 
-void Game::init(){
+void Game::init(bool *quit, bool *menu){
+
+    this->menu = menu;
+    this->quit = quit;
 
     spaceship =  IMG_Load("./assets/spaceship.png");
     asteroidSurface = IMG_Load("./assets/asteroid.png");
@@ -28,7 +31,7 @@ void Game::init(){
     explosionShipTx = SDL_CreateTextureFromSurface(renderer, explosionSheetShip);
     asteroidTx = SDL_CreateTextureFromSurface(renderer, asteroidSurface);
 
-    player = new Player(renderer, spaceship);
+    player = new Player(renderer, spaceship, menu);
 
     //FRAMES STUFF
     asteroidDelay = 60;
@@ -41,7 +44,7 @@ void Game::init(){
     kl = SDL_SCANCODE_LEFT;
 };
 
-void Game::quit(){
+void Game::quitGame(){
     SDL_FreeSurface(spaceship);
     SDL_FreeSurface(asteroidSurface);
     SDL_FreeSurface(explosionSheet);
@@ -55,64 +58,74 @@ void Game::quit(){
     delete this;
 };
 
-void Game::mainLoop(bool *quit){
+void Game::mainLoop(){
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer, backgroundTx, NULL, NULL);
-        if(shootDelay < 0) shootDelay = 0;
-        if(asteroidDelay <= 0){
-            all_asteroids.push_back(new Asteroid(renderer, asteroidTx));
-            asteroidDelay = 60;
-        }
-        frameStart = SDL_GetTicks();
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, backgroundTx, NULL, NULL);
+    if(shootDelay < 0) shootDelay = 0;
+    if(asteroidDelay <= 0){
+        all_asteroids.push_back(new Asteroid(renderer, asteroidTx));
+        asteroidDelay = 60;
+    }
+    frameStart = SDL_GetTicks();
 
-        while( SDL_PollEvent( &e ) ){
-             if( e.type == SDL_QUIT ) *quit = true;
-        }
+    while( SDL_PollEvent( &e ) ){
+        if( e.type == SDL_QUIT ) *quit = true;
+    }
 
-        if(keystates[kr]){
-            player->updateX(1.0);
-        }
-        else if(keystates[kl]){
-            player->updateX(-1.0);
-        }
-        else{
-            player->updateX(0);
-        }
+    if(keystates[kr]){
+        player->updateX(1.0);
+    }
+    else if(keystates[kl]){
+        player->updateX(-1.0);
+    }
+    else{
+        player->updateX(0);
+    }
 
-        if(keystates[ku]){
-            player->updateY(-1.0);
-        }
-        else if(keystates[kd]){
-            player->updateY(1.0);
-        }
-        else{
-            player->updateY(0);
-        }
+    if(keystates[ku]){
+        player->updateY(-1.0);
+    }
+    else if(keystates[kd]){
+        player->updateY(1.0);
+    }
+    else{
+        player->updateY(0);
+    }
 
-        if(keystates[SDL_SCANCODE_SPACE] && shootDelay <= 0){
-            player->shoot();
-            shootDelay = 20;
-        }
+    if(keystates[SDL_SCANCODE_SPACE] && shootDelay <= 0){
+        player->shoot();
+        shootDelay = 20;
+    }
 
-        player->updatePlayer(renderer);
-        for(int i = 0; i < (int)all_asteroids.size(); i++){
-            all_asteroids.at(i)->updateAsteroid(renderer, &all_asteroids, i);
-            checkCollisions(renderer, explosionShipTx, all_asteroids.at(i), player, &all_explosions);
-        }
-        player->updateBullets(renderer);
-        checkHits(renderer, explosionTx, &all_asteroids, player->getBullets(), &all_explosions);
-        for(int i = 0; i < (int)all_explosions.size(); i++){
-            all_explosions.at(i)->updateExplosion(renderer, &all_explosions, i);
-        }
+    player->updatePlayer(renderer);
+    for(int i = 0; i < (int)all_asteroids.size(); i++){
+        all_asteroids.at(i)->updateAsteroid(renderer, &all_asteroids, i);
+        checkCollisions(renderer, explosionShipTx, all_asteroids.at(i), player, &all_explosions);
+    }
+    player->updateBullets(renderer);
+    checkHits(renderer, explosionTx, &all_asteroids, player->getBullets(), &all_explosions);
+    for(int i = 0; i < (int)all_explosions.size(); i++){
+        all_explosions.at(i)->updateExplosion(renderer, &all_explosions, i);
+    }
 
-        SDL_RenderPresent(renderer);
+    SDL_RenderPresent(renderer);
 
-        frameTime = SDL_GetTicks() - frameStart;
+    frameTime = SDL_GetTicks() - frameStart;
 
-        if(frameDelay > frameTime){
-            SDL_Delay(frameDelay - frameTime);
-        }
-        asteroidDelay--;
-        shootDelay--;
+    if(frameDelay > frameTime){
+        SDL_Delay(frameDelay - frameTime);
+    }
+    asteroidDelay--;
+    shootDelay--;
 };
+
+void Game::showMenu(){
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+    while( SDL_PollEvent( &e ) ){
+        if( e.type == SDL_QUIT ) *quit = true;
+    }
+    if(keystates[SDL_SCANCODE_T]) { *menu = false; std::cout << "Launched game" << std::endl; };
+    SDL_RenderPresent(renderer);
+}

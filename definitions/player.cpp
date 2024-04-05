@@ -6,7 +6,9 @@
 #include <vector>
 
 
-Player::Player(SDL_Renderer *renderer, SDL_Surface *img){
+Player::Player(SDL_Renderer *renderer, SDL_Surface *img, bool *menu){
+
+    this->menu = menu;
 
     playerTx = SDL_CreateTextureFromSurface(renderer, img);
 
@@ -20,6 +22,7 @@ Player::Player(SDL_Renderer *renderer, SDL_Surface *img){
 };
 Player::~Player(){
     SDL_DestroyTexture(playerTx);
+    *menu = false;
 };
 
 void Player::updateX(float x){
@@ -88,4 +91,5 @@ std::vector<SDL_FRect>* Player::getBullets(){
 
 void Player::destroyPlayer(SDL_Renderer *renderer){
     std::cout << "Player destroyed" << std::endl;
+    delete this;
 };

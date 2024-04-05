@@ -10,7 +10,7 @@ class Player{
 
     public:
         Player() = default;
-        Player(SDL_Renderer *renderer, SDL_Surface *img);
+        Player(SDL_Renderer *renderer, SDL_Surface *img, bool *menu);
         ~Player();
 
         void updateX(float x), updateY(float y);
@@ -32,5 +32,6 @@ class Player{
         float dirX, dirY;
         float speed;
         std::vector<SDL_FRect> bullets;
+        bool *menu;
 };
 #endif

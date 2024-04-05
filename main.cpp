@@ -12,14 +12,16 @@ int main(int argc, char *argv[]){
     Rendering rendering = Rendering();
     rendering.initRendering();
 
-    Game *game = new Game(rendering.getRenderer(), rendering.getWindow());
-    game->init();
-
     bool quit = false;
+    bool menu = true;
+    Game *game = new Game(rendering.getRenderer(), rendering.getWindow());
+    game->init(&quit, &menu);
+
     while(!quit){ 
-        game->mainLoop(&quit);
+        if(menu) game->showMenu();
+        else game->mainLoop();
     }
-    game->quit();
+    game->quitGame();
     rendering.quitRendering();
 
     return 0;

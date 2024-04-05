@@ -18,10 +18,12 @@ class Game{
         Game(SDL_Renderer *renderer, SDL_Window *window);
         ~Game();
 
-        void init();
-        void quit();
+        void init(bool *quit, bool *menu);
+        void quitGame();
 
-        void mainLoop(bool *quit);
+        void mainLoop();
+
+        void showMenu();
 
     private:
 
@@ -58,6 +60,9 @@ class Game{
         SDL_Scancode kl;
 
         SDL_Event e;
+
+        bool *quit;
+        bool *menu;
 };
 
 #endif
